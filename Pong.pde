@@ -17,7 +17,7 @@ void setup () {
   
   p1 = new Paddle(width / 2 - 75, height - 25);
   p2 = new Paddle(width / 2 - 75, 0);
-  b1 = new Ball(width / 2, height / 2);
+  b1 = new Ball(width / 2 - 300, height / 2); // - 300 for a starting point slightly left
 }
 
 void draw () {
@@ -30,6 +30,19 @@ void draw () {
   p1.move();
   p2.moveArrow();
   b1.move();
+  
+  if (keyPressed && key == 'r') {
+    reset();
+  }
+}
+
+void reset () {
+  b1.ballX = width / 2 - 300;
+  b1.ballY = height / 2;
+  b1.ballXV = 10;
+  b1.ballYV = 10;
+  p1.paddleX = width / 2 - 75;
+  p2.paddleX = width / 2 - 75;
 }
 
 class Ball {
@@ -41,6 +54,9 @@ class Ball {
   Ball (int x, int y) {
     ballX = x;
     ballY = y;
+    
+    ballXV = 10;
+    ballYV = 10;
   }
   
   void display () {
@@ -49,7 +65,33 @@ class Ball {
   }
   
   void move () {
+    ballX += ballXV;
     
+    // if structures to reverse direction when it hits a side wall
+    if (ballX > width - 10 - 1) { // 10 is ball width, subtract to prevent ball offscreen by 10 plus another pixel for safety
+      ballXV *= -1;
+    }
+    
+    if (ballX < 0 + 1) { // another pixel for safety
+      ballXV *= -1;
+    }
+    
+    ballY += ballYV;
+    
+    if (ballY > height - 25 - 10 || ballY < 0 + 25) { // 25 for paddle height and - 10 for ball height
+      if (ballX >= p1.paddleX && ballX <= p1.paddleX + 150) { // 150 for paddle length
+        ballYV *= -1;
+      } else if (ballX >= p2.paddleX && ballX <= p2.paddleX + 150) {
+        ballYV *= -1;
+      } else {
+        freeze();
+      }
+    }
+  }
+  
+  void freeze () {
+    ballXV = 0;
+    ballYV = 0;
   }
 } // Ball class
 
@@ -76,10 +118,10 @@ class Paddle {
       } else if (inputKeys[1] == true) {
           paddleX += paddleXV;
       }
-    } else if (paddleX > width - 150) {
-        paddleX -= paddleXV/2;
+    } else if (paddleX > width - 150) { // stopping the paddle from going offscreen
+        paddleX = width - 151;
     } else if (paddleX < 0) {
-        paddleX += paddleXV/2;
+        paddleX = 1;
     }
   }
   
