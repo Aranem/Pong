@@ -78,10 +78,16 @@ class Ball {
     
     ballY += ballYV;
     
-    if (ballY > height - 25 - 10 || ballY < 0 + 25) { // 25 for paddle height and - 10 for ball height
+    if (ballY > height - 25 - 10) { // 25 for paddle height and - 10 for ball height
       if (ballX >= p1.paddleX && ballX <= p1.paddleX + 150) { // 150 for paddle length
         ballYV *= -1;
-      } else if (ballX >= p2.paddleX && ballX <= p2.paddleX + 150) {
+      } else {
+        freeze();
+      }
+    }
+    
+    if (ballY < 0 + 25) { // 25 for paddle height
+      if (ballX >= p2.paddleX && ballX <= p2.paddleX + 150) { // 150 for paddle length
         ballYV *= -1;
       } else {
         freeze();
