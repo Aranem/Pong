@@ -1,9 +1,19 @@
 Paddle p1, p2;
 Ball b1;
 
+boolean[] inputKeys;
+
 void setup () {
   size(1000, 600);
   frameRate(60);
+  
+  // movement key array for controlling multiple inputs at once
+  inputKeys = new boolean[4]; // 0 for a, 1 for d, 2 for left, 4 for right arrow
+
+  // initializing all to false to avoid error of paddles not moving if arrows pressed first
+  for (int i = 0; i < 4; i++) {
+    inputKeys[i] = false;
+  }
   
   p1 = new Paddle(width / 2 - 75, height - 25);
   p2 = new Paddle(width / 2 - 75, 0);
@@ -17,8 +27,8 @@ void draw () {
   p2.display();
   b1.display();
   
-  p1.move(key);
-  p2.moveArrow(keyCode);
+  p1.move();
+  p2.moveArrow();
   b1.move();
 }
 
@@ -39,7 +49,7 @@ class Ball {
   }
   
   void move () {
-  
+    
   }
 } // Ball class
 
@@ -59,35 +69,67 @@ class Paddle {
     rect(paddleX, paddleY, 150, 25);
   }
   
-  void move (double xCo) {
-    if (keyPressed) {
-      if (paddleX < width - 150 && paddleX > 0) {
-        if (key == 'a') {
-          paddleX -= paddleXV;
-        } else if (key == 'd') {
+  void move () {
+    if (paddleX < width - 150 && paddleX > 0) {
+      if (inputKeys[0] == true) {
+        paddleX -= paddleXV;
+      } else if (inputKeys[1] == true) {
           paddleX += paddleXV;
-        }
-      } else if (paddleX > width - 150) { // avoiding getting stuck on the edges
-          paddleX -= paddleXV/2;
-      } else if (paddleX < 0) {
-          paddleX += paddleXV/2;
       }
+    } else if (paddleX > width - 150) {
+        paddleX -= paddleXV/2;
+    } else if (paddleX < 0) {
+        paddleX += paddleXV/2;
     }
   }
   
-  void moveArrow (double xCo) {
-    if (key == CODED && keyPressed) {
-      if (paddleX < width - 150 && paddleX > 0) {
-        if (keyCode == LEFT) {
-          paddleX -= paddleXV;
-        } else if (keyCode == RIGHT) {
+  void moveArrow () {
+    if (paddleX < width - 150 && paddleX > 0) {
+      if (inputKeys[2] == true) {
+        paddleX -= paddleXV;
+      } else if (inputKeys[3] == true) {
           paddleX += paddleXV;
-        }
-      } else if (paddleX > width - 150) {
-          paddleX -= paddleXV/2;
-      } else if (paddleX < 0) {
-          paddleX += paddleXV/2;
       }
+    } else if (paddleX > width - 150) {
+        paddleX -= paddleXV/2;
+    } else if (paddleX < 0) {
+        paddleX += paddleXV/2;
     }
   }
 } // Paddle class
+
+void keyPressed () {
+  if (key == 'a') {
+    inputKeys[0] = true;
+  }
+  
+  if (key == 'd') {
+    inputKeys[1] = true;
+  }
+  
+  if (keyCode == LEFT) {
+    inputKeys[2] = true;
+  }
+  
+  if (keyCode == RIGHT) {
+    inputKeys[3] = true;
+  }
+}
+
+void keyReleased () {
+  if (key == 'a') {
+    inputKeys[0] = false;
+  }
+  
+  if (key == 'd') {
+    inputKeys[1] = false;
+  }
+  
+  if (keyCode == LEFT) {
+    inputKeys[2] = false;
+  }
+  
+  if (keyCode == RIGHT) {
+    inputKeys[3] = false;
+  }
+}
